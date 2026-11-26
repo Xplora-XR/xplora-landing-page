@@ -113,11 +113,119 @@
   --sidebar-ring: oklch(0.553 0.013 58.071);
 }
 
+/* Xplora landing v1 — tokens from design/landing-v1-decisoes.md (single dark theme) */
+@theme {
+  --color-bg: #0B0E14;
+  --color-bg-2: #10141C;
+  --color-surface: #161B25;
+  --color-navy: #212833;
+  --color-line: rgb(255 251 246 / 0.09);
+  --color-line-2: rgb(255 251 246 / 0.16);
+  --color-sand: #FFFBF6;
+  --color-dim: #9AA6B8;
+  --color-steel: #4F607A;
+  --color-blue: #2B73DF;
+  --color-blue-hover: #3A82EE;
+  --color-blue-2: #326DB1;
+  --color-blue-3: #234982;
+  --color-blue-glow: rgb(43 115 223 / 0.18);
+
+  --container-site: 1320px;
+  --spacing-pad: max(5vw, 20px);
+  --spacing-nav: 72px;
+  --spacing-band: clamp(72px, 10vw, 140px);
+
+  --text-display-xl: clamp(52px, 9.2vw, 140px);
+  --text-display-xl--line-height: 0.92;
+  --text-display-xl--letter-spacing: -0.04em;
+  --text-display-xl--font-weight: 900;
+  --text-display-l: clamp(38px, 5.6vw, 84px);
+  --text-display-l--line-height: 0.92;
+  --text-display-l--letter-spacing: -0.04em;
+  --text-display-l--font-weight: 900;
+  --text-display-cta: clamp(56px, 11vw, 170px);
+  --text-display-cta--line-height: 0.92;
+  --text-display-cta--letter-spacing: -0.04em;
+  --text-display-cta--font-weight: 900;
+
+  --animate-ring: ring 2s infinite;
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-drift: drift 14s ease-in-out infinite alternate;
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+  @keyframes drift {
+    to { background-position: 100% 100%; }
+  }
+  @keyframes ring {
+    50% { transform: scale(1.35); opacity: 0.4; }
+  }
+}
+
+@utility wrap {
+  width: 100%;
+  max-width: var(--container-site);
+  margin-inline: auto;
+  padding-inline: var(--spacing-pad);
+}
+
+/* micro-labels: Geist Mono 11px, uppercase, tracking .14em */
+@utility mono-label {
+  font: 500 11px/1.4 var(--font-geist-mono), ui-monospace, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* 24px measuring grid behind the About scan */
+@utility scan-grid {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 23px, var(--color-line) 23px 24px),
+    repeating-linear-gradient(90deg, transparent 0 23px, var(--color-line) 23px 24px);
+}
+
+/* Scroll-linked entrance. Content stays visible where unsupported or with reduced motion. */
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(24px); }
+}
+
 @layer base {
+  /* emphasis word in titles: italic main-blue */
+  :is(h1, h2, h3) em {
+    font-style: italic;
+    color: var(--color-blue);
+    padding-right: 0.06em;
+  }
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--color-line);
+  }
+  html {
+    color-scheme: dark;
+    scroll-padding-top: 80px;
+    scrollbar-color: var(--color-navy) var(--color-bg);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-bg text-sand font-sans antialiased;
+    line-height: 1.6;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--color-blue);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 3px;
   }
 }
