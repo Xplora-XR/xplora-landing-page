@@ -1,4 +1,3 @@
-import { divider } from "@heroui/theme";
 import TestemonialsCards from "./TestemonialsCards";
 
 export default function Testimonials() {

@@ -1,6 +1,5 @@
 import {Card, CardHeader, CardBody} from "@heroui/card";
 import {Popover, PopoverTrigger, PopoverContent} from "@heroui/popover"
-import { HiOutlineArrowRight } from "react-icons/hi";
 
 import Image from "next/image";
 
