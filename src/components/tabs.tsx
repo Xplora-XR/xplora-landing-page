@@ -1,13 +1,9 @@
     "use client";
     import { Tabs, Tab } from "@heroui/tabs";
-    import { Card, CardBody } from "@heroui/card";
     import { HiOutlineArrowRight } from "react-icons/hi";
-    import Image from "next/image";
     import { motion, AnimatePresence } from "framer-motion";
     import HowUseCards from "./ui/HowUse";
 
-    import { Button } from "@heroui/button";
-    import { card } from "@heroui/theme";
 
     const tabsData = [
       { id: "arquitetos", label: "Arquitetos" },
