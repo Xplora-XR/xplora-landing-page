@@ -1,35 +1,56 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { services } from "@/data/content";
 import { contact } from "@/data/placeholders";
+import { contactText, isValidContact } from "@/lib/contact";
 import SectionLabel from "./SectionLabel";
 
 const field =
   "w-full resize-y border-0 border-b border-line-2 bg-transparent py-[18px] text-base text-sand outline-none transition-colors placeholder:text-dim/75 focus:border-blue focus-visible:outline-none";
 
-export default function Contact() {
-  const [status, setStatus] = useState("");
+const read = (form: HTMLFormElement) => {
+  const f = new FormData(form);
+  const s = (k: string) => String(f.get(k) ?? "").trim();
+  return { nome: s("nome"), email: s("email"), empresa: s("empresa"), servicos: f.getAll("servico").map(String), msg: s("msg") };
+};
 
-  // shortcut: no backend yet, so the form opens the visitor's e-mail app; swap for an API route or form service.
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+export default function Contact() {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [status, setStatus] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const f = new FormData(e.currentTarget);
-    const nome = String(f.get("nome")).trim();
-    const email = String(f.get("email")).trim();
-    if (!nome || !/.+@.+\..+/.test(email)) {
+    const form = e.currentTarget;
+    const data = read(form);
+    if (!isValidContact(data)) {
       setStatus("Preencha nome e um e-mail válido.");
       return;
     }
-    const empresa = String(f.get("empresa")).trim();
-    const servicos = f.getAll("servico").join(", ");
-    const body = [`Nome: ${nome}`, `E-mail: ${email}`];
-    if (empresa) body.push(`Empresa: ${empresa}`);
-    if (servicos) body.push(`Interesse: ${servicos}`);
-    body.push("", String(f.get("msg")).trim());
-    location.href = `mailto:${contact.email}?subject=${encodeURIComponent(`Projeto XR · ${nome}`)}&body=${encodeURIComponent(body.join("\n"))}`;
-    setStatus("Abrindo seu e-mail com a mensagem pronta para enviar.");
+    setSending(true);
+    setStatus("Enviando…");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, website: new FormData(form).get("website") }),
+      });
+      if (!res.ok) throw new Error(((await res.json().catch(() => null)) as { error?: string } | null)?.error);
+      form.reset();
+      setStatus("Mensagem enviada! Retornaremos em breve.");
+    } catch (err) {
+      setStatus(`${(err as Error).message || "Não foi possível enviar agora."} Tente pelo WhatsApp.`);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  // Keeps a real link (works without JS / middle-click); only adds the pre-filled text on click.
+  const onWhatsApp = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const text = formRef.current ? contactText(read(formRef.current)) : "";
+    e.currentTarget.href = `${contact.whatsappHref}?text=${encodeURIComponent(text || "Olá! Vim pelo site da Xplora e quero falar sobre um projeto.")}`;
   };
 
   return (
@@ -43,7 +64,8 @@ export default function Contact() {
           <p className="mt-6 max-w-[56ch] text-[17px] text-dim">Conte o que você quer criar. A primeira conversa é por nossa conta.</p>
         </div>
 
-        <form onSubmit={onSubmit} noValidate className="grid gap-1">
+        <form ref={formRef} onSubmit={onSubmit} noValidate className="grid gap-1">
+          <input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
           <input name="nome" aria-label="Seu nome" placeholder="Seu nome" autoComplete="name" required className={field} />
           <input name="email" type="email" aria-label="E-mail" placeholder="E-mail" autoComplete="email" required className={field} />
           <input name="empresa" aria-label="Empresa (opcional)" placeholder="Empresa (opcional)" autoComplete="organization" className={field} />
@@ -66,11 +88,12 @@ export default function Contact() {
 
           <button
             type="submit"
-            className="mt-4 flex min-h-16 cursor-pointer items-center justify-between rounded border border-line-2 px-5 text-base font-semibold text-sand transition-colors hover:border-blue"
+            disabled={sending}
+            className="mt-4 flex min-h-16 cursor-pointer items-center justify-between rounded border border-line-2 px-5 text-base font-semibold text-sand transition-colors hover:border-blue disabled:cursor-wait disabled:opacity-60"
           >
-            Enviar mensagem <ArrowUpRight className="size-5" aria-hidden="true" />
+            {sending ? "Enviando…" : "Enviar mensagem"} <ArrowUpRight className="size-5" aria-hidden="true" />
           </button>
-          <a href={contact.whatsappHref} className="flex min-h-16 items-center justify-between rounded bg-blue px-5 font-semibold text-white transition-colors hover:bg-blue-hover">
+          <a href={contact.whatsappHref} onClick={onWhatsApp} target="_blank" rel="noopener noreferrer" className="flex min-h-16 items-center justify-between rounded bg-blue px-5 font-semibold text-white transition-colors hover:bg-blue-hover">
             Resposta rápida pelo WhatsApp <ArrowUpRight className="size-5" aria-hidden="true" />
           </a>
           <p role="status" className="mt-2 min-h-6 text-blue">
