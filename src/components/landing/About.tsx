@@ -1,4 +1,4 @@
-import { VisorCloud } from "./clouds";
+import GlassesModel from "./GlassesModel";
 import SectionLabel from "./SectionLabel";
 
 const pillars = [
@@ -29,9 +29,9 @@ export default function About() {
             ))}
           </div>
         </div>
-        <div aria-hidden="true" className="scan-grid reveal relative aspect-square overflow-hidden rounded border bg-bg-2 min-[861px]:sticky min-[861px]:top-[110px]">
-          <VisorCloud />
-          <span className="mono-label absolute bottom-3.5 left-4 text-dim">scan · nuvem de pontos · 3D</span>
+        <div className="scan-grid reveal relative aspect-square overflow-hidden rounded border bg-bg-2 min-[861px]:sticky min-[861px]:top-[110px]">
+          <GlassesModel />
+          <span aria-hidden="true" className="mono-label pointer-events-none absolute bottom-3.5 left-4 text-dim">modelo 3D · arraste para girar</span>
         </div>
       </div>
     </section>

@@ -42,36 +42,3 @@ export function HeroCloud() {
     />
   );
 }
-
-/** About: a stylised VR headset in points (rounded box, two lenses, strap). */
-function visorPoints(): Vec3[] {
-  const o: Vec3[] = [];
-  const rnd = (a: number, b: number) => a + Math.random() * (b - a);
-  const squircle = (v: number, k: number) => Math.pow(Math.abs(v), 0.35) * Math.sign(v) * k;
-  for (let i = 0; i < 2600; i++) {
-    const u = Math.random() * Math.PI * 2;
-    o.push([squircle(Math.cos(u), 0.36), squircle(Math.sin(u), 0.15), rnd(-1, 1) * 0.12]);
-  }
-  for (let i = 0; i < 900; i++) {
-    const side = Math.random() < 0.5 ? -1 : 1, u = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * 0.1;
-    o.push([side * 0.17 + Math.cos(u) * r, Math.sin(u) * r * 0.9, 0.13]);
-  }
-  for (let i = 0; i < 700; i++) {
-    const u = (rnd(-0.9, 0.9) * Math.PI) / 2;
-    o.push([Math.sin(u) * 0.42, rnd(-0.03, 0.03), -Math.cos(u) * 0.42 + 0.05]);
-  }
-  return o;
-}
-
-export function VisorCloud() {
-  return (
-    <PointCloud
-      spin
-      radius={90}
-      dot={1.1}
-      points={visorPoints}
-      place={(W, H) => ({ cx: W / 2, cy: H / 2, s: Math.min(W, H) * 0.95 })}
-      className="absolute inset-0 size-full"
-    />
-  );
-}
