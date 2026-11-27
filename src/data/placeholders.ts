@@ -13,13 +13,12 @@ export const testimonials: Testimonial[] = Array.from({ length: 3 }, () => ({
 
 export const contact = {
   email: "contato@xplora.com.br",
-  phone: "+55 00 00000-0000",
-  /** e.g. https://wa.me/55XXXXXXXXXXX */
-  whatsappHref: "#contato",
+  phone: "+55 89 98807-0734",
+  whatsappHref: "https://wa.me/5589988070734",
 };
 
 export const socials = [
   { label: "Instagram", href: "#top" },
   { label: "LinkedIn", href: "#top" },
-  { label: "WhatsApp", href: "#top" },
+  { label: "WhatsApp", href: contact.whatsappHref },
 ];
